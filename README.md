@@ -34,7 +34,31 @@
 - MySQL
 - Git
 
-### 2. 模型系統
+### 2. 安裝步驟
+
+1. Clone 專案至本地端
+    
+    ```bash
+    git clone https://github.com/kyle0903/ids-blog.git
+    cd ids-blog
+    
+    ```
+    
+2. 安裝前端相依套件：
+    
+    ```bash
+    npm install
+    ```
+    
+3. **安裝後端相依套件**：
+    
+    ```bash
+    cd server
+    npm install
+    ```
+    
+
+### 3. 模型系統
 
 - CommonJS(若要使用ES6標準，在package.json加上type:”module”
 - 以下為模型系統差異：
@@ -47,11 +71,78 @@
     | 執行時機 | 動態載入 (運行時解析) | 靜態載入 (編譯時解析) |
     | 適用環境 | Node.js (預設 CommonJS) | ES6+ (現代前端, Node.js 需 `type: "module"` 或 `.mjs` 副檔名) |
 
-### 3. 資料庫設定
+### 4. 資料庫設定
 
-確保 MySQL 正常運行，並在index.js中初始化資料庫。
+- 更新 `server/config/config.js` 中的資料庫連線設定
+- 確保 MySQL 正常運行，以及能夠與資料庫連線
 
-### 4. 伺服器啟動
+### 5. 資料庫結構
+
+- **accounts**
+    
+    用於存儲用戶的基本資訊和帳號管理。
+    
+    - **id** (INT, PRIMARY KEY) - 用戶唯一識別碼
+    - **user** (VARCHAR) - 帳號名稱
+    - **password** (VARCHAR) - 密碼（加密儲存）
+    - **email** (VARCHAR) - 電子郵件
+    - **introduction** (TEXT) - 用戶個人簡介
+
+---
+
+- **random_table**
+    
+    用於存儲用戶認證或重設密碼的驗證碼。
+    
+    - **id** (INT, PRIMARY KEY)
+    - **account_id** (INT, FOREIGN KEY) - 對應 `accounts.id`
+    - **randomCode** (VARCHAR) - 隨機碼，用於認證或忘記密碼驗證
+
+---
+
+- **posts**
+    
+    儲存用戶發佈的文章內容及互動資訊。
+    
+    - **post_id** (INT, PRIMARY KEY) - 文章唯一識別碼
+    - **account_id** (INT, FOREIGN KEY) - 對應 `accounts.id`
+    - **title** (VARCHAR) - 文章標題
+    - **post_text** (TEXT) - 文章內容
+    - **date_posted** (DATETIME) - 發佈日期
+    - **likes** (INT) - 按讚數
+
+---
+
+- **tb_likes**
+    
+    用於記錄每篇文章的按讚資訊。
+    
+    - **post_id** (INT, FOREIGN KEY) - 對應 `posts.post_id`
+    - **account_id** (INT, FOREIGN KEY) - 對應 `accounts.id`
+
+---
+
+- **tb_comment**
+    
+    儲存用戶對貼文的留言。
+    
+    - **id** (INT, PRIMARY KEY)
+    - **post_id** (INT, FOREIGN KEY) - 對應 `posts.post_id`
+    - **comment** (TEXT) - 留言內容
+    - **account** (VARCHAR) - 留言者帳號（對應 `accounts.user`）
+
+### 6. 伺服器啟動
 
 - 前端： `http://localhost:3000`
+    
+    ```bash
+    npm run start
+    ```
+    
 - 後端 API： `http://localhost:8081`
+    
+    ```bash
+    cd server
+    npm run start
+    ```
+    
